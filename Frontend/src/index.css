@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset margin mặc định */
+body {
+  margin: 0;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+/* Animation cho carousel */
+@keyframes slide {
+  0% { transform: translateX(0); }
+  16.66% { transform: translateX(0); }
+  33.33% { transform: translateX(-33.33%); }
+  50% { transform: translateX(-33.33%); }
+  66.66% { transform: translateX(-66.66%); }
+  83.33% { transform: translateX(-66.66%); }
+  100% { transform: translateX(0); }
+}
