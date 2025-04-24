@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
 import logo from "../assets/images/logobachkhoa.png";
 
 const Modal = ({ onForgotPasswordClick }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const { setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (e) => {
@@ -35,7 +37,17 @@ const Modal = ({ onForgotPasswordClick }) => {
 
       if (response.ok) {
         console.log("Đăng nhập thành công, lưu token:", data.token);
-        localStorage.setItem("authToken", data.token);
+        sessionStorage.setItem("authToken", data.token);
+        // Lưu thông tin người dùng vào Context
+        setUserData({
+          username: data.username,
+          role: data.role,
+          Name: data.Name,
+          MSSV: data.MSSV,
+          SDT: data.SDT,
+          Class: data.Class,
+          email: data.email,
+        });
         closeModal();
         navigate("/dashboard");
       } else {

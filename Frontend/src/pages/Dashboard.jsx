@@ -19,7 +19,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = sessionStorage.getItem("authToken");
     if (!token) {
       redirectToLogin("Vui lòng đăng nhập để truy cập dashboard");
       return;
@@ -56,7 +56,7 @@ const Dashboard = () => {
 
     const redirectToLogin = (message) => {
       setErrorMessage(message);
-      localStorage.removeItem("authToken");
+      sessionStorage.removeItem("authToken");
       setTimeout(() => navigate("/"), 1500);
     };
 
@@ -81,7 +81,7 @@ const Dashboard = () => {
   
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = sessionStorage.getItem("authToken");
 
     try {
       await fetch("http://localhost:5001/api/logout", {
@@ -95,7 +95,7 @@ const Dashboard = () => {
       console.error("Lỗi khi logout:", err.message);
     }
 
-    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
     navigate("/");
   };
 

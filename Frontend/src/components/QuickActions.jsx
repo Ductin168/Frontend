@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 const QuickActions = ({ type, onActionClick }) => {
   const studentActions = [
     "Đặt chỗ học",
@@ -13,11 +15,15 @@ const QuickActions = ({ type, onActionClick }) => {
     "Quản lý phân hội",
   ];
 
-  // ✅ Sửa tại đây
   const actions = type === "student" ? studentActions : adminActions;
+  const navigate = useNavigate();
 
   const handleActionClick = (action) => {
-    onActionClick({ type, action });
+    if (action === "Đặt chỗ học") {
+      navigate('/dat-cho-hoc');
+    } else {
+      onActionClick({ type, action });
+    }
   };
 
   return (
