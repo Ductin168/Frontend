@@ -21,7 +21,7 @@ const BookingForm = () => {
     studentId: userData?.MSSV || '',
     email: userData?.email || '',
     phone: userData?.SDT || '',
-    class: userData?.Class || '',
+    className: userData?.Class || '',
   });
   const [errors, setErrors] = useState({});
   const selectedRoom = JSON.parse(sessionStorage.getItem('selectedRoom')) || {};
@@ -53,13 +53,13 @@ const BookingForm = () => {
         studentId: userData.MSSV || '',
         email: userData.email || '',
         phone: userData.SDT || '',
-        class: userData.Class || '',
+        className: userData.Class || '',
       });
     }
   }, [userData]);
 
   useEffect(() => {
-    if (!selectedRoom.classId || !selectedRoom.timeSlot || selectedRoom.status !== 'cancelled') {
+    if (!selectedRoom.classId || !selectedRoom.timeSlot || selectedRoom.status !== 'Available') {
       alert('❌ Không tìm thấy thông tin phòng hoặc phòng không trống. Vui lòng chọn lại phòng.');
       navigate('/dat-cho-hoc');
     }
@@ -119,10 +119,11 @@ const BookingForm = () => {
         mssv: formData.studentId,
         email: formData.email,
         phonenumber: formData.phone,
-        class: formData.class,
+        className: formData.className,
         campus: selectedRoom.campus,
         classId: selectedRoom.classId,
         timeSlot: selectedRoom.timeSlot,
+        status: 'booked',
       };
 
       const response = await fetch(`http://localhost:5001/api/bookings`, {
@@ -216,15 +217,14 @@ const BookingForm = () => {
             <label className="text-lg">Lớp</label>
             <input
               type="text"
-              name="class"
+              name="className"
               placeholder="Lớp"
-              className={`p-2 rounded bg-gray-800 border-2 ${errors.class ? 'border-red-500' : formData.class ? 'border-green-500' : 'border-transparent'}`}
-              value={formData.class}
+              className={`p-2 rounded bg-gray-800 border-2 ${errors.className ? 'border-red-500' : formData.className ? 'border-green-500' : 'border-transparent'}`}
+              value={formData.className}
               onChange={handleInputChange}
             />
           </div>
-          <div className="bg-blue-6
-00 p-5 rounded-xl text-yellow-300 min-w-[250px]">
+          <div className="bg-blue-600 p-5 rounded-xl text-yellow-300 min-w-[250px]">
             <h3 className="text-white text-lg mb-2">
               Thời Gian Giữ Chỗ <span className="float-right text-red-500 font-bold">{formatTime()}</span>
             </h3>

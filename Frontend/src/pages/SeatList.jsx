@@ -99,9 +99,9 @@ export default function SeatListApp() {
       setError('Thông tin người dùng không hợp lệ');
       return;
     }
-    if (seat.status !== 'cancelled') {
-      console.warn('Không thể chọn phòng không ở trạng thái cancelled:', seat);
-      setError('Chỉ có thể chọn phòng ở trạng thái cancelled');
+    if (seat.status !== 'Available') {
+      console.warn('Không thể chọn phòng không ở trạng thái Available:', seat);
+      setError('Chỉ có thể chọn phòng ở trạng thái Available');
       return;
     }
     const confirmBooking = confirm(`Bạn có chắc muốn chọn chỗ ở phòng ${seat.classId}, ${userData.username}?`);
@@ -183,9 +183,9 @@ export default function SeatListApp() {
 
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="p-2 rounded text-black">
           <option value="">Tất cả trạng thái</option>
-          <option value="cancelled">Chỗ trống</option>
-          <option value="booked">Đã đặt</option>
-          <option value="transferred">Đã chuyển</option>
+          <option value="Available">Chỗ trống</option>
+          <option value="Reserved">Đã đặt</option>
+          <option value="Maintained">Đã chuyển</option>
         </select>
 
         <select value={timeSlot} onChange={(e) => setTimeSlot(e.target.value)} className="p-2 rounded text-black">
@@ -227,12 +227,12 @@ export default function SeatListApp() {
                   <td className="p-2">
                     <button
                       className={`rounded px-3 py-1 text-white ${
-                        seat.status === 'cancelled' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                        seat.status === 'Available' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
                       }`}
                       onClick={() => handleSelect(seat)}
-                      disabled={seat.status !== 'cancelled'}
+                      disabled={seat.status !== 'Available'}
                     >
-                      Chọn
+                      Chạm
                     </button>
                   </td>
                 </tr>
