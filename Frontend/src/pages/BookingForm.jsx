@@ -1,5 +1,3 @@
-// BookingForm.jsx (đã sửa để bỏ PUT cập nhật phòng, xử lý lỗi JSON)
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
@@ -61,8 +59,8 @@ const BookingForm = () => {
   }, [userData]);
 
   useEffect(() => {
-    if (!selectedRoom.buildingRoom) {
-      alert('❌ Không tìm thấy thông tin phòng. Vui lòng chọn lại phòng.');
+    if (!selectedRoom.classId || !selectedRoom.timeSlot || selectedRoom.status !== 'cancelled') {
+      alert('❌ Không tìm thấy thông tin phòng hoặc phòng không trống. Vui lòng chọn lại phòng.');
       navigate('/dat-cho-hoc');
     }
   }, [navigate, selectedRoom]);
@@ -96,7 +94,7 @@ const BookingForm = () => {
       return;
     }
 
-    if (!selectedRoom.buildingRoom || !selectedRoom.campus || !selectedRoom.startTime || !selectedRoom.endTime) {
+    if (!selectedRoom.classId || !selectedRoom.campus || !selectedRoom.timeSlot) {
       alert('❌ Thiếu thông tin phòng. Vui lòng chọn lại phòng.');
       navigate('/dat-cho-hoc');
       return;
@@ -123,9 +121,8 @@ const BookingForm = () => {
         phonenumber: formData.phone,
         class: formData.class,
         campus: selectedRoom.campus,
-        buildingRoom: selectedRoom.buildingRoom,
-        startTime: selectedRoom.startTime,
-        endTime: selectedRoom.endTime,
+        classId: selectedRoom.classId,
+        timeSlot: selectedRoom.timeSlot,
       };
 
       const response = await fetch(`http://localhost:5001/api/bookings`, {
@@ -226,7 +223,8 @@ const BookingForm = () => {
               onChange={handleInputChange}
             />
           </div>
-          <div className="bg-blue-600 p-5 rounded-xl text-yellow-300 min-w-[250px]">
+          <div className="bg-blue-6
+00 p-5 rounded-xl text-yellow-300 min-w-[250px]">
             <h3 className="text-white text-lg mb-2">
               Thời Gian Giữ Chỗ <span className="float-right text-red-500 font-bold">{formatTime()}</span>
             </h3>
@@ -237,17 +235,17 @@ const BookingForm = () => {
               readOnly
               className="p-2 rounded bg-gray-800 w-full"
             />
-            <label className="text-lg">Tòa - Phòng</label>
+            <label className="text-lg">Phòng</label>
             <input
               type="text"
-              value={selectedRoom.buildingRoom || 'H6 - 812'}
+              value={selectedRoom.classId || 'H6-812'}
               readOnly
               className="p-2 rounded bg-gray-800 w-full"
             />
             <label className="text-lg">Thời Gian</label>
             <input
               type="text"
-              value={`${selectedRoom.startTime || '7:00'} - ${selectedRoom.endTime || '8:50'}`}
+              value={selectedRoom.timeSlot || '7:00-8:50'}
               readOnly
               className="p-2 rounded bg-gray-800 w-full"
             />

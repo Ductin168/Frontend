@@ -10,8 +10,7 @@ export default function SeatListApp() {
   const [search, setSearch] = useState('');
   const [campus, setCampus] = useState('');
   const [status, setStatus] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [timeSlot, setTimeSlot] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
   const rowsPerPage = 5;
@@ -80,16 +79,15 @@ export default function SeatListApp() {
   // Lọc danh sách phòng
   useEffect(() => {
     const filtered = seats.filter((seat) =>
-      seat.buildingRoom?.toLowerCase().includes(search.toLowerCase()) &&
+      seat.classId?.toLowerCase().includes(search.toLowerCase()) &&
       (campus === '' || seat.campus?.toString() === campus) &&
       (status === '' || seat.status === status) &&
-      (startTime === '' || seat.startTime === startTime) &&
-      (endTime === '' || seat.endTime === endTime)
+      (timeSlot === '' || seat.timeSlot === timeSlot)
     );
     console.log('Danh sách phòng lọc:', filtered);
     setFilteredSeats(filtered);
     setCurrentPage(1);
-  }, [search, campus, status, startTime, endTime, seats]);
+  }, [search, campus, status, timeSlot, seats]);
 
   const totalPages = Math.ceil(filteredSeats.length / rowsPerPage);
   const pageSeats = filteredSeats.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -101,12 +99,12 @@ export default function SeatListApp() {
       setError('Thông tin người dùng không hợp lệ');
       return;
     }
-    if (seat.status !== 'Trống') {
-      console.warn('Không thể chọn phòng không ở trạng thái Trống:', seat);
-      setError('Chỉ có thể chọn phòng ở trạng thái Trống');
+    if (seat.status !== 'cancelled') {
+      console.warn('Không thể chọn phòng không ở trạng thái cancelled:', seat);
+      setError('Chỉ có thể chọn phòng ở trạng thái cancelled');
       return;
     }
-    const confirmBooking = confirm(`Bạn có chắc muốn chọn chỗ ở phòng ${seat.buildingRoom}, ${userData.username}?`);
+    const confirmBooking = confirm(`Bạn có chắc muốn chọn chỗ ở phòng ${seat.classId}, ${userData.username}?`);
     if (confirmBooking) {
       console.log('Lưu selectedRoom:', seat);
       sessionStorage.setItem('selectedRoom', JSON.stringify(seat));
@@ -185,33 +183,19 @@ export default function SeatListApp() {
 
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="p-2 rounded text-black">
           <option value="">Tất cả trạng thái</option>
-          <option value="Trống">Chỗ trống</option>
-          <option value="Đầy">Đã đầy</option>
-          <option value="Bảo trì">Bảo trì</option>
+          <option value="cancelled">Chỗ trống</option>
+          <option value="booked">Đã đặt</option>
+          <option value="transferred">Đã chuyển</option>
         </select>
 
-        <select value={startTime} onChange={(e) => setStartTime(e.target.value)} className="p-2 rounded text-black">
-          <option value="">Giờ bắt đầu</option>
-          <option value="06:00">06:00</option>
-          <option value="08:00">08:00</option>
-          <option value="10:00">10:00</option>
-          <option value="12:00">12:00</option>
-          <option value="14:00">14:00</option>
-          <option value="16:00">16:00</option>
-          <option value="18:00">18:00</option>
-          <option value="20:00">20:00</option>
-        </select>
-
-        <select value={endTime} onChange={(e) => setEndTime(e.target.value)} className="p-2 rounded text-black">
-          <option value="">Giờ kết thúc</option>
-          <option value="07:50">07:50</option>
-          <option value="09:50">09:50</option>
-          <option value="11:50">11:50</option>
-          <option value="13:50">13:50</option>
-          <option value="15:50">15:50</option>
-          <option value="17:50">17:50</option>
-          <option value="19:50">19:50</option>
-          <option value="21:50">21:50</option>
+        <select value={timeSlot} onChange={(e) => setTimeSlot(e.target.value)} className="p-2 rounded text-black">
+          <option value="">Thời gian</option>
+          <option value="7:00-8:50">7:00-8:50</option>
+          <option value="9:00-10:50">9:00-10:50</option>
+          <option value="11:00-12:50">11:00-12:50</option>
+          <option value="13:00-14:50">13:00-14:50</option>
+          <option value="15:00-16:50">15:00-16:50</option>
+          <option value="17:00-18:50">17:00-18:50</option>
         </select>
       </div>
 
@@ -220,9 +204,8 @@ export default function SeatListApp() {
           <thead>
             <tr className="bg-yellow-400">
               <th className="p-2">Cơ sở</th>
-              <th className="p-2">Tòa - Phòng</th>
-              <th className="p-2">Giờ bắt đầu</th>
-              <th className="p-2">Giờ kết thúc</th>
+              <th className="p-2">Phòng</th>
+              <th className="p-2">Thời gian</th>
               <th className="p-2">Trạng thái</th>
               <th className="p-2"></th>
             </tr>
@@ -230,7 +213,7 @@ export default function SeatListApp() {
           <tbody>
             {pageSeats.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center p-4">
+                <td colSpan="5" className="text-center p-4">
                   Không có kết quả phù hợp
                 </td>
               </tr>
@@ -238,17 +221,16 @@ export default function SeatListApp() {
               pageSeats.map((seat, i) => (
                 <tr key={i} className="text-center">
                   <td className="p-2">{seat.campus}</td>
-                  <td className="p-2">{seat.buildingRoom}</td>
-                  <td className="p-2">{seat.startTime}</td>
-                  <td className="p-2">{seat.endTime}</td>
+                  <td className="p-2">{seat.classId}</td>
+                  <td className="p-2">{seat.timeSlot}</td>
                   <td className="p-2">{seat.status}</td>
                   <td className="p-2">
                     <button
                       className={`rounded px-3 py-1 text-white ${
-                        seat.status === 'Trống' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
+                        seat.status === 'cancelled' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'
                       }`}
                       onClick={() => handleSelect(seat)}
-                      disabled={seat.status !== 'Trống'}
+                      disabled={seat.status !== 'cancelled'}
                     >
                       Chọn
                     </button>
